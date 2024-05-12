@@ -1,0 +1,606 @@
+:: StoryTitle
+AE-SystemDemo
+
+
+:: StoryData
+{
+  "ifid": "4B285716-8FA0-42F0-9328-8796D63035F6",
+  "format": "SugarCube",
+  "format-version": "2.36.1",
+  "start": "Initialization",
+  "tag-colors": {
+    "Combat": "red"
+  },
+  "zoom": 1
+}
+
+
+:: Cheat {"position":"900,500","size":"100,100"}
+Press enter to register values.
+<<for _key, _value range $stats>>
+    <<set _k to '$'+'stats.'+_key >>
+    <label>_key : <<textbox _k _value>></label>
+<</for>>
+[[Start with these stats|lookout]]
+
+
+
+:: Fight {"position":"1550,150","size":"100,100"}
+The $adj pirate approaches. 
+<<if random(1,6)>4>>Stoppin' a pirate could be dangerous to yer health!<<else>><<if random(1,6)>3>>Pirate: Move outta the way, or I cuts my way through!<<else>>Pirate: Aye! This better be importan'.<</if>><</if>>
+<div id="thediv"  style='color: silver' ></div>
+  <<nobr>>   
+<<if random(1,6)>3>><<link "Nice night we're having, isn't it?">><<replace  "#thediv">>I sure hopes ya had sumpting more importan' ta stop me for?<</replace>><</link>><br><</if>> 
+<<if random(1,6)>3>><<link "How do you guys talk so funny?">><<replace  "#thediv">>Pirate Lingo! It's how everybody talked back then. Come on $stats.Name, play along.<</replace>><</link>><br> <</if>> 
+<<link "My name is Guybrush Threepwood. Prepare to die! (*Start the Fight)">><<replace  "#thediv">>Here we go!<<timed 3s>><<goto clash>>[[clash]]<</timed>><</replace>><</link>><br> 
+<<if random(1,6)>3>><<link "Ever notice how all these roads start to look the same?">><<replace  "#thediv">>Yeah! Now that you mention it, they do. It's probably just that we're tired.<</replace>><</link>><br> <</if>> 
+<<if random(1,6)>3>><<link "You wouldn't happen to have a couple of pieces of eight?">><<replace  "#thediv">>Beggin's not becomin'.  Ya oughtta go out and steal it like a real pirate!<</replace>><</link>> <br><</if>> 
+<<link "Sorry to bother you. I'll be on my way...">><<replace  "#thediv">>Have a nice night!<</replace>><<timed 3s>><<goto LookForFight>><</timed>><</link>>
+<</nobr>>
+<<set $points to 0>>
+<<for _key, _insult range $insults>>
+<<if _insult.learned>1>><<set _insult.learned=1>><</if>>
+<</for>>
+
+<<if $stats.shortcutsEnabled!=0>>
+***Cheat*** Showing pirate vocabulary:
+Level: $pl / Knowledge: $pk
+<<for _key, _insult range $pinsults>>
+_key : <<print $insults[$pinsults[_key]].attack>> => <<print $comebacks[$pinsults[_key]].defense >>
+<</for>>
+
+<</if>>
+
+
+:: Initialization {"position":"900,375","size":"100,100"}
+<<silently>>
+/* All Game items in one datamap */ 
+/* a=attack, ac=armor, w=weight, c=cost, pos=location, d=description */
+<<set $items to {
+    1: { name: "Sword", a: 5, ac: 0, w: 4, c: 100, pos: "shop", d:"a Steel short sword." },
+    2: { name: "Shield", a: 1, ac: 7, w: 6, c: 100, pos: "shop",d:"a Round shield with a star imprinted on the center" },
+    3: { name: "Amulet of Wrath", a: 2, ac: 1, w: 0, c: 100, pos: "shop", d:"an Amulet made of rose gold." },
+    4: { name: "Amulet of Defiance", a: 0, ac: 3, w: 0, c: 100, pos: "shop", d:"a Blue amulet with glossy finish" },
+    5: { name: "Red Key",  a: 0, ac: 0, w: 0, c: 100, pos: "office", d:"An ordinary red key." },
+    6: { name: "Healing Potion",  a: 0, ac: 0, w: 0,c: 100,  pos: "bar",d:"a tiny glass bottle with swirling red magical fluid." },
+    7: { name: "Spyglass", a: 0, ac: 0, w: 0, c: 100, pos: "lookoutpirate",d:"an Antique spyglass, weathered with tales untold." }
+}>>
+
+Insult Sword Fighting Data:
+
+<<set $insults to
+{
+1:{attack:"You fight like a dairy Farmer!",learned:1},
+2:{attack:"This is the END for you, you gutter crawling cur!",learned:0},
+3:{attack:"I've spoken with apes more polite than you!",learned:0},
+4:{attack:"Soon you'll be wearing my sword like a shish kebab!",learned:0},
+5:{attack:"People fall at my feet when they see me coming!",learned:0},
+6:{attack:"I'm not going to take your insolence sitting down!",learned:0},
+7:{attack:"I once owned a dog that was smarter than you.",learned:0},
+8:{attack:"Nobody's ever drawn blood from me and nobody ever will.",learned:0},
+9:{attack:"Have you stopped wearing diapers yet?",learned:0},
+10:{attack:"There are no words for how disgusting you are.",learned:0},
+11:{attack:"You make me want to puke.",learned:0},
+12:{attack:"My handkerchief will wipe up your blood!",learned:0},
+13:{attack:"I got this scar on my face during a mighty struggle!",learned:0},
+14:{attack:"I've heard you are a contemptible sneak.",learned:0},
+15:{attack:"You're no match for my brains, you poor fool.",learned:0},
+16:{attack:"You have the manners of a beggar.",learned:0},
+21:{attack:"What an idiot!*",learned:1},
+22:{attack:"You call yourself a pirate?*",learned:1},
+23:{attack:"Boy, you are ugly.*",learned:1}
+}
+>>
+<<set $comebacks to
+{
+1:{defense:"How appropriate. You fight like a cow!",learned:1},
+2:{defense:"And I've got a little TIP for you, get the POINT?",learned:0},
+3:{defense:"I'm glad to hear you attended your family reunion!",learned:0},
+4:{defense:"First you'd better stop waving it like a feather duster.",learned:0},
+5:{defense:"Even BEFORE they smell your breath?",learned:0},
+6:{defense:"Your hemorrhoids are flaring up again eh?",learned:0},
+7:{defense:"He must have taught you everything you know.",learned:0},
+8:{defense:"You run THAT fast?",learned:0},
+9:{defense:"Why? Did you want to borrow one?",learned:0},
+10:{defense:"Yes, there are. You just never learned them.",learned:0},
+11:{defense:"You make me think somebody already did.",learned:0},
+12:{defense:"So you got that job as janitor, after all.",learned:0},
+13:{defense:"I hope now you've learned to stop picking your nose.",learned:0},
+14:{defense:"Too bad no one's ever heard of YOU at all.",learned:0},
+15:{defense:"I'd be in real trouble if you ever used them.",learned:0},
+16:{defense:"I wanted to make sure you'd feel comfortable with me.",learned:0},
+17:{defense:"Oh, Yeah?!*",learned:1},
+18:{defense:"I am rubber, you are glue..*.",learned:1},
+19:{defense:"I'm shaking, I'm shaking*",learned:1},
+20:{defense:"So's your mother.*",learned:1},
+21:{defense:"What? What's this?! This is not fighting! Get Back!*",learned:0},
+22:{defense:"What a noob*",learned:0},
+23:{defense:"You are shaking! You are shaking!*",learned:0}
+}
+>>
+<<set $points to 0>>
+<<set $adj to "Mighty">>
+<<set $stats to {
+Name:"Guybrush",
+Hp:100,
+Attack: 1,
+Armor: 0,
+XP:0,
+Level:1,
+gold:15,
+win:0,
+lost:0,
+shortcutsEnabled:0
+}>>
+<</silently>>
+<div style="text-align: center;">
+<<timed 120ms>>
+WELCOME TO MÊLÈE ISLAND!
+
+<<next>>game systems demonstration for Twine!
+Note: This is just a demonstration, so I've tried to implement as much as I can under couple of hours. Your game can be small and short.
+
+Item storage and Inventory (Basic Inventory)
+Monster Generation (Pirates with different insult vocabulary)
+Combat (Insult Sword Fight)
+Event/NPC System (Verda the Gambler)
+Learning/Economy (Auto-Learning Combat Insults)
+Dialogue animation (Slow appearing dialogue text)
+Interactive Choices (choices that change the game state without changing the passage)
+
+Solution: Go to town, then shop, get the sword
+go to Office, follow the path and find a pirate to attack. As pirates attack you, you will learn more insults and their comebacks. Win 5 fights to get in the scumm bar and complete game.
+
+<<next>>By Arda Erdikmen
+<<next>>Using Sugarcube 2
+<<next>>[[Start Game|lookout]]
+<<next>>[[Cheat to Test|Cheat]]
+<</timed>>
+</div>
+
+
+
+
+
+
+:: LookForFight {"position":"1500,300","size":"100,100"}
+You find yourself traversing one of the winding paths snaking through the dense island forests, linking the coastal ports together. These paths offer a quicker route from one end of the island to the other than trudging along the coast. But beware, these parts of the island have an unsettling air about them.
+<<timed 800ms>><<set _rate to 2>> /* smaller to better chance to get a pirate*/
+You are walking the path...
+<<next>>Waiting... <<set _zar to random(1,6)>> /* decide if a pirate appears...*/
+<<if _zar>_rate>><<if random(1,6)>3>>You see someone approaching from afar<<else>>It's dark around here.....<</if>><<else>>It's dark  around here...<</if>>
+<<next>><<if _zar>_rate>> /*now generate new pirate*/
+<<silently>>
+<<include NewPirate>>  /*generate new pirate*/
+<<set $adj to "Timid">>
+<<if $pl>7>><<set $adj to "Ugly">><</if>>
+<<if $pl>10>><<set $adj to "<span style='color: purple'>Filthy</span>">><</if>>
+<<if $pl>14>><<set $adj to "<span style='color: gold'>Fearless</span>">><</if>><</silently>>
+ <div id="path">You see a $adj pirate passing by.
+---|- [[Attack!|Fight]] -|---</div>   <<else>><<if random(1,6)>3>>You see someone approaching from afar<<else>>It's dark around here...<</if>>
+<</if>>
+<<next>><<if _zar>_rate>> <div id="farpath">The $adj pirate is walking away...</div><<else>>Very lonely...<</if>><<next>><<next>><<if _zar>_rate>><<replace "#path">>He's gone. <</replace>><<replace "#farpath">>What should I do now? <</replace>> <<else>>Maybe I should walk to somewhere else...<</if>>
+<</timed>>
+<<link "Keep Walking" LookForFight>> … <</link>>
+<<link "Get back to town" Town>> … <</link>>
+<<if $stats.shortcutsEnabled!=0>>Cheat: [[Attack!|Fight]] last pirate.<</if>>
+Wins: $stats.win
+Losses: $stats.lost
+<<include moveNPC>>
+<<include NPCCheck>>
+
+
+:: NPCCheck {"position":"700,500","size":"100,100"}
+<<nobr>>
+/* this passage prints out if a NPC is in the room, basically, same as inventory system */
+<<set $currentRoom to passage()>>
+<<if $currentRoom==$NPCLocation>>/* NPC is here */
+<span style='color: SeaGreen'>Verda the Gambler is here. </span>
+<<if $stats.gold>25>>
+<br><span style='color: YellowGreen'>Verda saunters up to you with a mischievous grin. She chirps:<br>
+ 'Hey there, adventurer! Feeling lucky? Care to try your hand at a little game of chance? For just 25 gold, you pick a cup, and if you find the bead hidden underneath, you win big! Quadruple your money!' <br>
+She then proceeds to shuffle the cups faster than a monkey chasing a banana. You try to keep up, but she's as slippery as a greased eel.
+<<set $gamble to random(1,3)>>
+<<link "Pick first cup" "NPCcheckWin">><<set $pick to 1>><</link>> | 
+<<link "Pick second cup" "NPCcheckWin">><<set $pick to 2>><</link>> | 
+<<link "Pick third cup" "NPCcheckWin">><<set $pick to 3>><</link>><br>
+(ignore if you don't want to gamble, you have $stats.gold gold) <br></span>
+<<else>> /* not enough money */
+The mystical woman gives you a once-over with her enchanting eyes, as if she's about to reveal your deepest secrets. Then, she simply shrugs and goes back to rummaging through her bag, completely unfazed. <br>
+<</if>>
+<</if>>
+<</nobr>>
+
+
+:: NPCcheckWin {"position":"700,600","size":"100,100"}
+Verda elegantly reveals the contents of your cup.
+<<if $gamble==$pick>>Here is the bead! You won 100 gold! <<set $stats.gold+=100 >>
+<<else>>Sorry mate, you lost your bet. <<set $stats.gold-=25 >>
+<</if>>
+Your current gold is $stats.gold
+
+<<link Return $currentRoom>> … <</link>>
+
+
+
+:: NewPirate {"position":"1400,125","size":"100,100"}
+<<silently>> /*no output to screen*//
+
+/*We are going to randomly create a mighty pirate now!!! */
+
+<<set $pl to random(4 , 20)>> 	/*Pirate Level*/
+<<set $pk to random(3 ,  $pl )>>  /*Pirate insult count*/
+<<if $pl >16>><<set $pl=16>><</if>>   /*cap pirate level to 20*/
+<<if $pk>$pl-1>><<set $pk=$pl-1>><</if>>
+<<if $pk>8>><<set $pk=8>><</if>>    /*cap knowledge to level*/
+
+<<set _randomlist to []>> /*create temp array to assign random insults*/
+<<for _i to 1; _i lt $pl; _i++>>  /* create knowledge base*/
+<<set _randomlist.push(_i)>> /*create a number list, 1 to pirate level*/
+<</for>>
+<<run _randomlist.shuffle()>>   /* randomize sequence of insult base*/
+
+<<set $pcomebacks to []>>
+<<set $pinsults to []>> /*create a variable to hold pirate insult list*/
+<<for _i to 0; _i lt $pk; _i++>>  /*Our pirate knows _pk no.of insults*/
+<<set $pinsults.push(_randomlist[_i])>> /*copy insult to permanent array*/
+<<set $pcomebacks.push(_randomlist[_i])>> /*teach the comebacks too!*/
+<</for>>
+<<set $pinsults.push(21)>>
+<<set $pinsults.push(22)>>
+<<set $pinsults.push(23)>>
+<<set $pcomebacks.push(21)>>
+<<set $pcomebacks.push(22)>>
+<<set $pcomebacks.push(23)>>
+
+/*now we have a dirty scruffy foul smelling pirate!*/
+
+<</silently>>
+
+
+:: ProgressBar {"position":"1950,125","size":"100,100"}
+<<switch $points>>
+<<case 0>><pre>
+&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#95;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#95;&#32;&#32;&#10;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#40;&#95;&#41;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#92;&#32;&#32;&#32;&#32;&#40;&#95;&#41;&#32;&#10;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#95;&#47;&#47;&#96;&#45;&#45;&#43;&#45;&#45;&#45;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#92;&#95;&#95;&#95;&#47;&#124;&#32;&#92;&#10;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#47;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#124;&#32;&#32;&#10;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#47;&#32;&#92;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#47;&#32;&#92;&#32;&#10;&#32;&#32;&#32;&#32;&#32;&#95;&#47;&#32;&#32;&#124;&#95;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#124;&#32;&#32;&#32;&#32;&#32;&#32;&#95;&#124;&#32;&#32;&#32;&#92;&#10;</pre>
+<<case 1>><pre>
+&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#95;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#95;&#32;&#32;&#10;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#40;&#95;&#41;&#32;&#32;&#32;&#32;&#32;&#32;&#124;&#32;&#32;&#32;&#40;&#95;&#41;&#32;&#10;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#95;&#47;&#47;&#96;&#45;&#45;&#43;&#45;&#45;&#45;&#32;&#124;&#95;&#95;&#95;&#47;&#124;&#32;&#92;&#10;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#47;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#124;&#32;&#32;&#10;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#47;&#32;&#92;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#47;&#32;&#92;&#32;&#10;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#95;&#47;&#32;&#124;&#32;&#124;&#95;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#95;&#124;&#32;&#32;&#92;&#10;</pre>
+<<case 2>><pre>
+&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#95;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#95;&#32;&#32;&#10;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#95;&#95;&#40;&#95;&#41;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#40;&#95;&#41;&#32;&#10;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#47;&#32;&#32;&#47;&#96;&#45;&#45;&#43;&#45;&#45;&#45;&#95;&#95;&#47;&#124;&#124;&#32;&#10;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#47;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#124;&#32;&#92;&#10;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#47;&#32;&#92;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#47;&#32;&#92;&#32;&#10;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#124;&#32;&#47;&#32;&#32;&#32;&#124;&#95;&#32;&#32;&#32;&#32;&#32;&#32;&#47;&#32;&#32;&#124;&#32;&#10;</pre>
+<<case -1>><pre>
+&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#95;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#95;&#32;&#32;&#10;&#32;&#32;&#32;&#32;&#32;&#32;&#40;&#95;&#41;&#32;&#32;&#47;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#40;&#95;&#41;&#32;&#10;&#32;&#32;&#32;&#32;&#95;&#47;&#47;&#96;&#45;&#45;&#47;&#32;&#32;&#45;&#45;&#45;&#43;&#45;&#95;&#95;&#47;&#124;&#32;&#92;&#10;&#32;&#32;&#32;&#32;&#32;&#47;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#124;&#32;&#32;&#10;&#32;&#32;&#32;&#32;&#47;&#32;&#92;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#47;&#32;&#92;&#32;&#10;&#32;&#32;&#95;&#47;&#32;&#32;&#124;&#95;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#95;&#124;&#32;&#124;&#32;&#92;&#10;</pre>
+<<case -2>><pre>
+&#32;&#32;&#32;&#95;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#95;&#32;&#32;&#32;&#10;&#32;&#95;&#40;&#95;&#41;&#32;&#47;&#32;&#32;&#32;&#32;&#40;&#95;&#41;&#95;&#32;&#10;&#32;&#32;&#47;&#96;&#45;&#47;&#45;&#45;&#45;&#43;&#95;&#95;&#47;&#92;&#32;&#92;&#32;&#10;&#32;&#32;&#124;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#92;&#32;&#32;&#32;&#10;&#32;&#47;&#32;&#92;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#47;&#32;&#92;&#32;&#32;&#10;&#47;&#32;&#32;&#32;&#124;&#95;&#32;&#32;&#32;&#32;&#32;&#32;&#95;&#124;&#32;&#32;&#92;&#32;&#124;&#10;</pre>
+<</switch>>
+
+
+
+
+:: TextToDiv {"position":"825,100","size":"100,100"}
+<<nobr>>
+<<set _index to 0>>
+<<set _d to "">>
+<<set _color to 'yellow'>>
+<<if  _r=== undefined>><<set _r to "10ms" >><</if>> 
+<<repeat _r t8n>>
+    <<replace "#dialogue">>
+       <<set _d += "<span style='color: "+_color+"'>"+  _textLines[_index] +"</span><br>">>
+       <<if _color=='yellow'>><<set _color to 'white'>><<else>><<set _color to 'yellow'>><</if>> 
+       <<print _d>>
+        <<set _index += 1>>
+        <<if  _textLines[_index]=== undefined>><<stop>><</if>> 
+<</replace>><</repeat>>
+<</nobr>>
+
+
+:: Town {"position":"1225,450","size":"100,100"}
+Mêlée Town
+The main hub with various shops, residences, and landmarks.
+<<include roomitems>>
+
+<<include NewPirate>>
+<<include moveNPC>>
+<<include NPCCheck>>
+
+[[The Scumm Bar|bar]]
+[[Governor's Office|office]] <-- to the combat area!
+[[Voodoo Shop|shop]]
+[[The Look Out|lookout]]
+<<if $stats.shortcutsEnabled!=0>>Cheat: [[Go directly to swordfight|LookForFight]]<</if>>
+
+
+:: attack [Combat] {"position":"1950,250","size":"100,100"}
+<<include ProgressBar>>
+You, $stats.Name raise your sword and decide to employ your linguistic skills as you make a forward move:
+<<nobr>>
+<<timed 1s>>While your opponent tries to parry your sword thrust, your mocking words distract him.<br>
+<<next>>You: <span style='color: yellow'><<print $insults[$lastattack].attack>></span><br>
+<<next>>
+<<next>>
+<<next>>$adj Pirate: <<if $pcomebacks.includes(Number($lastattack))>> <span style='color: red'><<print $comebacks[$lastattack].defense>></span><<if $comebacks[$lastattack].learned==0>>(*Learned)<</if>><<set $comebacks[$lastattack].learned to 1>><<set $points-=1>><<else>> <<print $comebacks[random(21,23)].defense>><<set $points+=1>><</if>><br>
+<<next>>
+<<next>>
+<<next>><<if $pcomebacks.includes(Number($lastattack))>>This sudden turn surprised you, and you had to step back. <<else>>Underneath this remark, your opponent felt humiliated, lost focus, and had to step back.<</if>><br>
+<<next>>Now the fight <<switch $points>><<case 0>>is in the middle.<<case -1>>is not good. You are stepping back.<<case -2>>looks grim. No where to go, you are cornered.<<case -3>>You: Ok, Ok! I give up. You win, I surrender! [[Go back to path|LookForFight]]<<case 1>>looks good. You moved forward.<<case 2>>is almost done. Your opponent is cornered.<<case 3>>$adj Pirate: Ok, Ok! I give up. You win! <<set $stats.gold+=$pl>>[[Go back to path|LookForFight]]<</switch>>
+<<next>><<if $points==3 >> <<else>><<if  $pcomebacks.contains(Number($lastattack))>>[[Defend your position|defence]]<<else>>[[Attack more!|clash]]<</if>><</if>>
+<</timed>><</nobr>>
+
+
+:: bar {"position":"1350,650","size":"100,100"}
+The Scumm Bar - A tavern frequented by pirates.
+You find yourself in the bustling Scumm Bar, where pirates swap tales over tankards of grog.
+<<if $stats.Win<5>>
+Sadly, today Scummbar is full and you cannot enter. 
+
+Bu you hear if you beat swordmaster in a swordfight, you can go in the mighty Scumm Bar freely. They may even invite you!!!
+<<else>>
+[[Enter Scumm Bar(TM)|bar2]]
+<</if>>
+<<include moveNPC>>
+<<include NPCCheck>>
+
+[[To Town Square|Town]]
+
+
+
+:: bar2 {"position":"1375,775","size":"100,100"}
+The Scumm Bar - A tavern frequented by pirates.
+<<include roomitems>>
+
+<div id="dialogue"></div>
+    <<link "Tell me more about mastering the sword">>
+        <<replace "#dialogue">>
+            <<Timed 1500ms>>First, get ye a sword. 
+            <<next>>You must seek out and defeat the Sword Master.
+            <<next>>Someone in town can probably direct you.
+            <<next>>Oh! You'll want to find someone to train you first.<</timed>>
+        <</replace>>
+    <</link>>
+    <<link "Tell me more about mastering the art of thievery">>
+        <<replace "#dialogue">>
+            We want you to procure a small item for us... The Idol of Many Hands... In the Governor's Mansion!
+        <</replace>>
+    <</link>>
+    <<link "You're a bunch of foul-smelling, grog-swilling pigs!">>
+        <<replace "#dialogue">>
+            To be a pirate ye must also be a foul-smelling, grog-swilling pig.
+        <</replace>>
+    <</link>>
+    <<link "I'll just be running along now.">>
+        <<replace "#dialogue">>
+            Leave us to our grog. Come back later and tell us how ye're doing.
+        <</replace>>
+    <</link>>
+ <<link "*** Tell me how I'm doing? ***">>
+<<replace "#dialogue">>
+You are doing great!!! [[Complete The Game!!!|theEnd]]
+<</replace>>
+<</link>>
+<<include moveNPC>>
+<<include NPCCheck>>
+
+
+:: clash [Combat] {"position":"1775,175","size":"100,100"}
+<<if $items[1].pos=='inventory'>><<else>>[[noSword]]<<goto noSword>><</if>><<include ProgressBar>>Both you pirates draw swords and stand facing each other. 
+Your swords clash intermittently, but it's clear that the battle is evenly matched. Something needs to be done to tip the balance:
+Now the fight <<switch $points>><<case 0>>is in the middle.<<case -1>>is not good. You are stepping back.<<case -2>>looks grim. No where to go, you are cornered.<<case 1>>looks good. You moved forward.<<case 2>>is almost done. Your opponent is cornered.<</switch>>
+
+<div id="insult">You say:</div>
+<<nobr>>
+<<for _key, _insult range $insults>>
+	<<if _insult.learned==1>>
+		<<capture _key>><<linkreplace "_insult.attack">><<set $lastattack to _key>><<set $insults[_key].learned=2>><<goto attack>>[[attack]]<</linkreplace>><</capture>>
+		<br>
+	<</if>>
+<</for>>
+[[I give up. You win!|playerGiveUp]]
+<</nobr>>
+
+
+:: defence [Combat] {"position":"1950,400","size":"100,100"}
+<<include ProgressBar>>
+Now the fight <<switch $points>><<case 0>>is in the middle.<<case -1>>is not going good. You are stepping back.<<case -2>>looks grim. No where to go, you are cornered.<<case 1>>looks good. You moved forward.<<case 2>>is almost done. Your opponent is cornered.<</switch>>
+
+The advantage is on your opponent's side. He makes his move:
+<<nobr>>
+<<if $pinsults.length>4>><<set _r to random(0, $pinsults.length-4)>><<else>><<goto giveup>>[[giveup]]<</if>>
+<<set $pattack to $pinsults[_r]>>
+<<set $pinsults.delete($pattack)>>
+
+<<timed 1s>>$adj Pirate: <<next>><span style='color: red'><<print $insults[$pattack].attack>></span><<if $insults[$pattack].learned==0>><<set $insults[$pattack].learned to 1>> (*Learned*)<</if>><br>/* learn this insult!*/
+<<next>><br>
+<<next>>What's your comeback?<br>
+<<for _key, _insult range $comebacks>>
+	<<if _insult.learned==1>>
+		<<capture _key>><<linkreplace "_insult.defense">><<set $lastdefense to _key>><<goto result>>[[result]] <</linkreplace>><</capture>>
+		<br>
+	<</if>>
+<</for>>
+<</timed>><</nobr>>
+
+
+:: giveup [Combat] {"position":"1875,550","size":"100,100"}
+$adj Pirate: Ok, Ok! I'm tired. I give up. You win! But I'll keep my gold this time.
+<<set $stats.win+=1>>
+[[Go back to path|LookForFight]]
+[[Go to Town Center|Town]]
+
+
+:: inventory {"position":"700,225","size":"100,100"}
+You have following items in your inventory:
+<<silently>>
+<<set $stats.Attack to 1>>
+<<set $stats.Armor to 0>>
+
+<<set _p to previous()>>
+<<set _t to "">>
+<<for _key, _item range $items>><<if _item.pos=='inventory'>><<capture _item>><<set _t+=_item.name +":"+ _item.d +" <<linkreplace 'Drop "+_item.name+"' t8n>> *"+_item.name+" is Dropped. <<set $items["+_key+"].pos to _p>><</linkreplace>><br>">><</capture>><<set $stats.Armor+=_item.ac>><<set $stats.Attack+=_item.a>><</if>>
+<</for>>
+
+<<set _s to "">>
+<<for _key, _stat range $stats>>
+<<set _s += _key +" : "+_stat +"<br>">>
+<</for>>
+<<if _t =="">><<set _t="Nothing">><</if>>
+<</silently>>
+You are holding:
+<<print _t>>
+
+Your stats:
+<<print _s>>
+<<link Return _p>> … <</link>>
+
+
+
+:: lookout {"position":"1075,225","size":"100,100"}
+The Lookout Point: <<if $stats.shortcutsEnabled!=0>><<include NewPirate>>Cheat: [[Go directly to swordfight|LookForFight]] (Sword taken.) <<set  $items[1].pos='inventory'>> <</if>>
+A cliffside location on Mêlée Island with an old pirate stationed there, responsible for keeping watch.
+ <div id="dialogue"></div>
+<<set _textLines to [
+    "Guybrush : Hi! My name's Guybrush Threepwood, and I want to be a pirate!",
+    "Old Man : Yikes! Don't sneak up on me like that! (It is clear that he sees nothing behind his thick glasses.) ",
+    "Guybrush : Er... I'm over this way.",
+    "[[Old Man|lookoutpirate]] : Ah! Well, then, Triftweed--",
+    "Guybrush : THREEPWOOD. Guybrush THREEPWOOD.",
+    "Old Man : I see. So, you want to be a pirate, eh? You look more like a flooring inspector. But if you're serious about pirating, go talk to the pirate leaders. You'll find them in the Scumm Bar.",
+    "Guybrush : Gosh, thanks! I'll do that! Bye, now. I'm off to seek my fortune.",
+    "Old Man : Good luck.",
+    "","",
+    "Guybrush : (walks away, but suddenly stops) Um... Where did you say those pirate leaders were?",
+    "Old Man : The SCUMM BAR.",
+    "Guybrush : Right. Thanks.",
+    "[[To Town|Town]]"
+]>>
+ <<linkappend "Talk To Old Pirate">><<include "TextToDiv">><</linkappend>>
+
+<<include roomitems>><<include moveNPC>>
+<<include NPCCheck>>
+
+
+:: lookoutpirate {"position":"1100,50","size":"100,100"}
+The scruffy old pirate
+Dressed in tattered garb adorned with patches and eye patches, the lookout pirate squints into the horizon<<if $items[7].pos=='inventory'>>.<<else>> with a weathered telescope clutched in one hand.<</if>>
+
+<<include roomitems>>
+
+[[stop examining pirate|lookout]]
+<<include moveNPC>>
+
+
+
+:: moveNPC {"position":"700,400","size":"100,100"}
+<<silently>><<set $places2be to["lookout","Town","bar","bar2","shop","LookForFight","Office"]>>
+<<run $places2be.shuffle()>>
+<<set $NPCLocation to $places2be[0]>><</silently>>
+
+
+
+
+:: noSword {"position":"1350,0","size":"100,100"}
+Governor Marley is here to stop you!
+
+Entering a sword fight without a sword? Now that's like trying to dance without music! 
+Trust me, there are some real cutthroats on this island.
+
+You better snag yourself a blade, pronto! Maybe hit up the local shop for a sharp deal.
+
+[[Go back to town|Town]]
+
+<<include moveNPC>>
+<<include NPCCheck>>
+
+
+:: office {"position":"1500,600","size":"100,100"}
+Mêlée Island Governor's Mansion - The residence of Governor Elaine Marley.
+<<include roomitems>>
+Governor Eleine Marley is here.
+ <div id="dialogue"></div>
+ <<silently>>
+<<set _textLines to [ "$stats.Name ! Please listen to me! If you follow this path you will find yourself in a contested territory. You will need a sword to survive there. But sword is not enough you should also learn insults.",
+"Sword fights among pirates are different than what you might think. Anyone can swing a sword and hope to cut something.","That's why the real battle is fought with words. When the swords reach a stalemate, you must mock your opponent to distract them.", "","For example: You fight like a dairy Farmer!","",
+"but there's always a comeback that hits the mark.","for example: How appropriate. You fight like a cow!","",
+"Make sure your opponent won't have a comeback for your mockery.", "You can learn insults and comebacks from your opponents.",
+"In time, you'll become able to defeat all the pirates on this island!"]>>
+<<include "TextToDiv">>
+<</silently>>
+<<include moveNPC>>
+<<include NPCCheck>>
+
+<<if $items[1].pos=='inventory'>>Good, you have your pointy sword!<<else>>Go to the shop and get yourself a sword before going to the inland!<</if>>
+[[Back to Town|Town]]
+[[Go towards the eerie path.|LookForFight]]
+
+
+:: playerGiveUp [Combat] {"position":"1725,500","size":"100,100"}
+You: Ok, Ok! I'm tired. I give up. You win!
+<<set $stats.lost+=1>>
+[[Go back to path|LookForFight]]
+[[Go to Town Center|Town]]
+
+
+:: result [Combat] {"position":"1725,325","size":"100,100"}
+<<include ProgressBar>>
+<<nobr>>
+$adj Pirate: <<print $insults[$pattack].attack>><br>
+<<timed 1s>> You, $stats.Name: <<next>><<print $comebacks[$lastdefense].defense>><br>
+<<next>>
+<<if $pattack==$lastdefense>>
+	<<set $points+=1>>
+	<<timed 1s>>Your opponent staggers, you immediately move forward.
+	<<next>><<if $points==3>>$adj Pirate: Ok, Ok! I give up. You win! (You win the fight)<<set $stats.gold+=$pl>><<set $stats.win+=1>><br>[[Go back to path|LookForFight]]<<else>>[[Attack now!|clash]]<</if>>
+	<</timed>>
+<<else>>
+	<<set $points-=1>>
+	<<timed 1s>><span style='color: red'>Not a good comeback. You move backwards.</span><br><br>
+	<<next>><<if $points==-3>>You: Ok, Ok! I give up. You win, I surrender! (You lost the fight)<br><<set $stats.lost +=1>> [[Go back to path|LookForFight]]<<else>>[[Defend Again|defence]]<</if>>
+	<</timed>> 
+<</if>>
+<</timed>>
+<</nobr>>
+
+
+:: roomitems {"position":"700,100","size":"100,100"}
+<<silently>>
+<<set $lastpassage to passage()>>
+<<set _t to "">>
+<<for _key, _item range $items>>
+	<<if _item.pos==$lastpassage>>
+    <<capture _item>>
+        <<set _t+=_item.d +"<<linkreplace 'Get "+_item.name+"' t8n>> "+_item.name+" is taken. <<set $items["+_key+"].pos to 'inventory'>><</linkreplace>><br>">> <</capture>>
+    <</if>>
+<</for>>
+<</silently>><<if _t!="">>You see: _t<</if>>
+[[Check Your Inventory / Wear Equipment|inventory]]
+
+
+:: shop {"position":"1050,650","size":"100,100"}
+The International House of Mojo - A voodoo shop on Mêlée Island run by the voodoo priestess, Madame Minnie Goodsoup.
+
+<<include roomitems>>
+
+Hello $stats.Name!!! I'm Stan, you know, yes, you're biggest fan! Today I'm taking care of Voodoo shop as Madame has some work to do.
+
+Well, let me tell ya, some of these items might seem useless, but let me assure you, they'll give you that extra oomph you're lookin' for!
+<<if $items[1].pos!='shop'>>Sorry we don't have any more swords, thank you.<<else>>
+<span style='color: yellow'>Of course, you gotta have the SWORD if you wanna give those pirates a run for their money. And guess what? Today, it's on the house! Can you believe it?</span><</if>>
+
+[[Exit shop|Town]]
+<<include moveNPC>>
+
+
+:: theEnd {"position":"1375,900","size":"100,100"}
+<<nobr>>
+<pre>
+&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#46;&#45;&#34;&#45;&#46;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#46;&#45;&#34;&#45;&#46;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#46;&#45;&#34;&#45;&#46;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#46;&#45;&#34;&#45;&#46;&#10;&#32;&#32;&#32;&#32;&#32;&#95;&#47;&#95;&#45;&#46;&#45;&#95;&#92;&#95;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#95;&#47;&#46;&#45;&#46;&#45;&#46;&#92;&#95;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#95;&#47;&#46;&#45;&#46;&#45;&#46;&#92;&#95;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#95;&#47;&#46;&#45;&#46;&#45;&#46;&#92;&#95;&#10;&#32;&#32;&#32;&#32;&#47;&#32;&#95;&#95;&#125;&#32;&#123;&#95;&#95;&#32;&#92;&#32;&#32;&#32;&#32;&#32;&#32;&#47;&#124;&#40;&#32;&#111;&#32;&#111;&#32;&#41;&#124;&#92;&#32;&#32;&#32;&#32;&#32;&#32;&#40;&#32;&#40;&#32;&#111;&#32;&#111;&#32;&#41;&#32;&#41;&#32;&#32;&#32;&#32;&#32;&#40;&#32;&#40;&#32;&#111;&#32;&#111;&#32;&#41;&#32;&#41;&#10;&#32;&#32;&#32;&#47;&#32;&#47;&#47;&#32;&#32;&#34;&#32;&#32;&#92;&#92;&#32;&#92;&#32;&#32;&#32;&#32;&#124;&#32;&#47;&#47;&#32;&#32;&#34;&#32;&#32;&#92;&#92;&#32;&#124;&#32;&#32;&#32;&#32;&#32;&#32;&#124;&#47;&#32;&#32;&#34;&#32;&#32;&#92;&#124;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#124;&#47;&#32;&#32;&#34;&#32;&#32;&#92;&#124;&#10;&#32;&#32;&#47;&#32;&#47;&#32;&#92;&#39;&#45;&#45;&#45;&#39;&#47;&#32;&#92;&#32;&#92;&#32;&#32;&#47;&#32;&#47;&#32;&#92;&#39;&#45;&#45;&#45;&#39;&#47;&#32;&#92;&#32;&#92;&#32;&#32;&#32;&#32;&#32;&#32;&#92;&#39;&#47;&#94;&#92;&#39;&#47;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#92;&#32;&#46;&#45;&#46;&#32;&#47;&#10;&#32;&#32;&#92;&#32;&#92;&#95;&#47;&#96;&#34;&#34;&#34;&#96;&#92;&#95;&#47;&#32;&#47;&#32;&#32;&#92;&#32;&#92;&#95;&#47;&#96;&#34;&#34;&#34;&#96;&#92;&#95;&#47;&#32;&#47;&#32;&#32;&#32;&#32;&#32;&#32;&#47;&#96;&#92;&#32;&#47;&#96;&#92;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#47;&#96;&#34;&#34;&#34;&#96;&#92;&#10;&#32;&#32;&#32;&#92;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#47;&#32;&#32;&#32;&#32;&#92;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#47;&#32;&#32;&#32;&#32;&#32;&#32;&#47;&#32;&#32;&#47;&#124;&#92;&#32;&#32;&#92;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#47;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#92;&#10;&#10;&#45;&#61;&#123;&#32;&#115;&#101;&#101;&#32;&#110;&#111;&#32;&#101;&#118;&#105;&#108;&#32;&#125;&#61;&#123;&#32;&#104;&#101;&#97;&#114;&#32;&#110;&#111;&#32;&#101;&#118;&#105;&#108;&#32;&#125;&#61;&#123;&#32;&#115;&#112;&#101;&#97;&#107;&#32;&#110;&#111;&#32;&#101;&#118;&#105;&#108;&#32;&#125;&#61;&#123;&#32;&#104;&#97;&#118;&#101;&#32;&#110;&#111;&#32;&#102;&#117;&#110;&#32;&#125;&#61;&#45;
+</pre>
+<</nobr>>
+<br><br>
+You become a mighty pirate.
+
+<<for _key, _stat range $stats>>
+_key   : _stat 
+<</for>>
+
+The End. Thank you for playing. 
+Arda Erdikmen (2024)
+
+(Ascii art source: Ascii Art Archive)
